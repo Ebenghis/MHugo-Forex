@@ -1,0 +1,115 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>MHugo Forex</title>
+<style>
+:root{--bg:#0B0E14;--card:#141925;--line:#222A3A;--gold:#D4AF37;--tx:#EDE9DD;--mu:#8A90A2;--up:#2ECC8F;--dn:#FF5C6C}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:radial-gradient(120% 60% at 50% 0,#1a2033,var(--bg) 60%);color:var(--tx);font-family:system-ui,Roboto,sans-serif;padding:env(safe-area-inset-top) 0 calc(72px + env(safe-area-inset-bottom))}
+header{display:flex;align-items:center;gap:12px;padding:14px 18px}
+header svg{width:48px;height:48px;border-radius:12px}
+h1{font:600 20px Georgia,serif;margin:0;color:var(--gold);letter-spacing:.5px}
+header small{color:var(--mu);font-size:11px;display:block}
+main{padding:0 14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:12px}
+label{font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:1px}
+input,select{width:100%;background:#0E1320;color:var(--tx);border:1px solid var(--line);border-radius:12px;padding:12px;font-size:16px;margin:6px 0 10px}
+.row{display:flex;gap:8px;align-items:center}.row>*{flex:1}
+button{background:linear-gradient(#E6C458,#B8860B);color:#1a1405;border:0;border-radius:12px;padding:12px 16px;font-weight:600;font-size:15px}
+button.g{background:#0E1320;color:var(--gold);border:1px solid var(--line)}
+.big{font:600 30px Georgia,serif;color:var(--gold);margin:6px 0}
+.mu{color:var(--mu);font-size:13px}.up{color:var(--up)}.dn{color:var(--dn)}
+.li{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}.li:last-child{border:0}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px}.chips button{flex:none;padding:8px 12px;font-size:13px}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:#0d111b;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav a{flex:1;text-align:center;padding:10px 0;font-size:11px;color:var(--mu)}nav a b{display:block;font-size:20px;font-weight:400}nav a.on{color:var(--gold)}
+h3{margin:14px 4px 8px;font:600 13px system-ui;color:var(--mu);text-transform:uppercase;letter-spacing:1px}
+svg.ch{width:100%;height:200px}
+.sw{display:flex;justify-content:space-between;align-items:center;margin:8px 0}
+</style></head><body>
+<header><svg id="lg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F6E27A"/><stop offset="1" stop-color="#B8860B"/></linearGradient></defs><rect width="200" height="200" rx="44" fill="#0B0E14"/><g fill="url(#g)"><path id="w" d="M94 96C70 92 42 70 16 32c18 14 34 18 44 17-10 9-15 16-20 25 14-7 24-7 34-5-7 8-9 15-10 22 10-5 20-4 30 1z"/><use href="#w" transform="translate(200 0) scale(-1 1)"/><path d="M91 84q9-5 18 0l-3 40-6 26-6-26z"/><circle cx="100" cy="72" r="10"/><path d="M104 70l12 5-12 3z" fill="#fff6c8"/><path d="M96 150l-8 10m12-10v12m4-12l8 10" stroke="#B8860B" stroke-width="3" stroke-linecap="round"/></g><circle cx="103" cy="70" r="1.8" fill="#0B0E14"/><text x="100" y="184" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-weight="200" font-size="9" letter-spacing="2.5" fill="#D4AF37" opacity=".8">Hugues Mbwang</text></svg>
+<div><h1>MHugo Forex</h1><small id="st">Chargement…</small></div><button class="g" style="margin-left:auto;flex:none" onclick="load(true)">↻</button></header>
+<main id="v"></main>
+<nav id="nav"></nav>
+<script>
+const CUR=['XAF','USD','EUR','GBP','CNY','AED','SAR','JPY','CHF','ZAR','NGN','MAD','KES','EGP','CAD'];
+const FL={XAF:'🇨🇲',USD:'🇺🇸',EUR:'🇪🇺',GBP:'🇬🇧',CNY:'🇨🇳',AED:'🇦🇪',SAR:'🇸🇦',JPY:'🇯🇵',CHF:'🇨🇭',ZAR:'🇿🇦',NGN:'🇳🇬',MAD:'🇲🇦',KES:'🇰🇪',EGP:'🇪🇬',CAD:'🇨🇦'};
+const MK=[['Métaux précieux',[['GC=F','Or (once)',1],['SI=F','Argent (once)',1],['PL=F','Platine (once)',1],['PA=F','Palladium (once)',1]]],
+['Énergie',[['BZ=F','Pétrole Brent (baril)',1],['CL=F','Pétrole WTI (baril)',1],['NG=F','Gaz naturel',1]]],
+['Trading international',[['DX-Y.NYB','Indice Dollar (DXY)'],['^GSPC','S&P 500'],['^IXIC','Nasdaq'],['^DJI','Dow Jones'],['^FCHI','CAC 40'],['^FTSE','FTSE 100'],['^N225','Nikkei 225'],['BTC-USD','Bitcoin']]]];
+const $=s=>document.querySelector(s);
+const LS=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}},SV=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}};
+const fmt=n=>isFinite(n)?new Intl.NumberFormat('fr-FR',{maximumFractionDigits:Math.abs(n)<1?6:Math.abs(n)<100?4:2}).format(n):'—';
+let R=null,MD={},tab='conv',S=Object.assign({from:'USD',to:'XAF',amt:100,hc:'USD',hd:7,thr:600,on:false,fired:false,com:1.5,var:2},LS('mhf',{}));
+const save=()=>SV('mhf',S);
+const xafPer=c=>c==='XAF'?1:1/R[c.toLowerCase()];
+const conv=(a,f,t)=>a*xafPer(f)/xafPer(t);
+const J=async u=>{const r=await fetch(u);if(!r.ok)throw 0;return r.json()};
+async function getRates(d='latest'){
+ const us=[`https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@${d}/v1/currencies/xaf.json`,`https://${d}.currency-api.pages.dev/v1/currencies/xaf.json`];
+ for(const u of us){try{const j=await J(u);return j.xaf}catch{}}
+ if(d==='latest'){const j=await J('https://open.er-api.com/v6/latest/XAF');const o={};for(const k in j.rates)o[k.toLowerCase()]=j.rates[k];return o}
+ throw 0}
+async function yf(sym,range='1mo'){
+ const j=await J(`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=${range}&interval=1d`);
+ const r=j.chart.result[0],c=r.indicators.quote[0].close.filter(x=>x!=null),p=r.meta.regularMarketPrice??c.at(-1);
+ const prev=c.length>1?c.at(-2):r.meta.chartPreviousClose;return{p,ch:(p/prev-1)*100,c}}
+async function load(force){
+ $('#st').textContent='Actualisation…';
+ try{R=await getRates();$('#st').textContent='Taux en direct • '+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}catch{$('#st').textContent=R?'Hors ligne – derniers taux':'Hors ligne'}
+ if(R){checkAlert();draw()}
+ const all=MK.flatMap(g=>g[1]);
+ await Promise.all(all.map(async m=>{try{MD[m[0]]=await yf(m[0])}catch{}}));
+ draw()}
+const spark=(c,up)=>{if(!c||c.length<2)return'';const mn=Math.min(...c),mx=Math.max(...c);return `<svg width="64" height="26"><polyline fill="none" stroke="${up?'#2ECC8F':'#FF5C6C'}" stroke-width="1.6" points="${c.map((v,i)=>`${i*64/(c.length-1)},${24-(v-mn)/(mx-mn||1)*22}`).join(' ')}"/></svg>`};
+const opts=(sel)=>CUR.map(c=>`<option ${c===sel?'selected':''}>${c}</option>`).join('');
+const V={
+conv(){const r=conv(S.amt,S.from,S.to);return `<div class="card"><label>Montant</label><input id="a" type="number" inputmode="decimal" value="${S.amt}">
+<div class="row"><div><label>De</label><select id="f">${opts(S.from)}</select></div><button class="g" style="flex:0 0 48px" id="sw">⇄</button><div><label>Vers</label><select id="t">${opts(S.to)}</select></div></div>
+<div class="mu">${FL[S.from]} ${fmt(S.amt)} ${S.from} =</div><div class="big">${FL[S.to]} ${fmt(r)} ${S.to}</div><div class="mu">1 ${S.from} = ${fmt(conv(1,S.from,S.to))} ${S.to}</div></div>
+<h3>Cours en FCFA (XAF) – touchez pour la courbe</h3><div class="card">${CUR.slice(1).map(c=>`<div class="li" data-c="${c}"><span>${FL[c]} 1 ${c}</span><b>${fmt(xafPer(c))} FCFA</b></div>`).join('')}</div>`},
+mark(){return MK.map(([g,l])=>`<h3>${g}</h3><div class="card">${l.map(([s,n,fx])=>{const d=MD[s];if(!d)return`<div class="li"><span>${n}</span><span class="mu">indisponible</span></div>`;const up=d.ch>=0;
+ return `<div class="li"><div>${n}<div class="mu">${fx&&R?fmt(d.p*xafPer('USD'))+' FCFA':''}</div></div>${spark(d.c,up)}<div style="text-align:right"><b>${fmt(d.p)}${fx?' $':''}</b><div class="${up?'up':'dn'}">${up?'▲':'▼'} ${d.ch.toFixed(2)}%</div></div></div>`}).join('')}</div>`).join('')},
+chart(){return `<div class="chips">${CUR.slice(1).map(c=>`<button class="${c===S.hc?'':'g'}" data-hc="${c}">${c}</button>`).join('')}</div>
+<div class="card"><div class="row" style="margin-bottom:8px"><button class="${S.hd==7?'':'g'}" data-hd="7">7 jours</button><button class="${S.hd==30?'':'g'}" data-hd="30">1 mois</button></div><div id="chart" class="mu">Chargement…</div></div>`},
+sim(){const net=S.amt*(1-S.com/100),got=conv(net,S.from,S.to),back=got*conv(1,S.to,S.from)*(1+S.var/100)*(1-S.com/100),pl=back-S.amt;
+ return `<div class="card"><label>Montant à convertir</label><input id="a" type="number" value="${S.amt}">
+<div class="row"><div><label>Je change</label><select id="f">${opts(S.from)}</select></div><div><label>Contre</label><select id="t">${opts(S.to)}</select></div></div>
+<div class="row"><div><label>Commission (%)</label><input id="com" type="number" step=".1" value="${S.com}"></div><div><label>Variation du taux (%)</label><input id="var" type="number" step=".1" value="${S.var}"></div></div>
+<div class="mu">Vous recevez (après commission)</div><div class="big">${fmt(got)} ${S.to}</div>
+<div class="mu">Si ${S.to} varie de ${S.var}% face à ${S.from} puis reconversion :</div><div class="big ${pl>=0?'up':'dn'}">${fmt(back)} ${S.from}</div><div class="${pl>=0?'up':'dn'}">${pl>=0?'Gain':'Perte'} : ${fmt(Math.abs(pl))} ${S.from} (${(pl/S.amt*100).toFixed(2)}%)</div></div>`},
+alert(){return `<div class="card"><label>Alerte Dollar (USD) en FCFA</label>
+<div class="mu" style="margin-top:8px">Cours actuel : <b style="color:var(--gold)">${R?fmt(xafPer('USD')):'—'} FCFA</b></div>
+<label style="display:block;margin-top:12px">Seuil (FCFA pour 1 USD)</label><input id="thr" type="number" value="${S.thr}">
+<div class="sw"><span>M'avertir quand le dollar dépasse ce seuil</span><input type="checkbox" id="on" style="width:24px;height:24px" ${S.on?'checked':''}></div>
+<button class="g" id="tst" style="width:100%">Tester la notification</button>
+<p class="mu">Le cours est vérifié à l'ouverture et toutes les 5 min tant que l'application est active.</p></div>`}};
+function draw(){$('#v').innerHTML=V[tab]();bind();if(tab==='chart')hist()}
+const TABS=[['conv','💱','Convertir'],['mark','📈','Marchés'],['chart','📊','Courbes'],['sim','🧮','Simulateur'],['alert','🔔','Alertes']];
+$('#nav').innerHTML=TABS.map(t=>`<a data-t="${t[0]}"><b>${t[1]}</b>${t[2]}</a>`).join('');
+$('#nav').onclick=e=>{const a=e.target.closest('a');if(a){tab=a.dataset.t;sync();draw()}};
+const sync=()=>document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',a.dataset.t===tab));
+function bind(){const g=i=>document.getElementById(i);
+ const bn=(id,k,num)=>g(id)&&(g(id).onchange=e=>{S[k]=num?parseFloat(e.target.value)||0:e.target.value;save();draw()});
+ bn('a','amt',1);bn('f','from');bn('t','to');bn('com','com',1);bn('var','var',1);bn('thr','thr',1);
+ if(g('sw'))g('sw').onclick=()=>{[S.from,S.to]=[S.to,S.from];save();draw()};
+ if(g('on'))g('on').onchange=async e=>{S.on=e.target.checked;S.fired=false;save();if(S.on)await perm();checkAlert()};
+ if(g('tst'))g('tst').onclick=async()=>{await perm();notify('MHugo Forex','Notification de test : alertes activées ✅')};
+ document.querySelectorAll('[data-c]').forEach(e=>e.onclick=()=>{S.hc=e.dataset.c;tab='chart';save();sync();draw()});
+ document.querySelectorAll('[data-hc]').forEach(e=>e.onclick=()=>{S.hc=e.dataset.hc;save();draw()});
+ document.querySelectorAll('[data-hd]').forEach(e=>e.onclick=()=>{S.hd=+e.dataset.hd;save();draw()})}
+const HC={};
+async function hist(){const days=S.hd,ds=[];for(let i=days;i>=0;i--){const d=new Date(Date.now()-i*864e5);ds.push(d.toISOString().slice(0,10))}
+ const pts=(await Promise.all(ds.map(async d=>{try{HC[d]??=await getRates(d);return[d,1/HC[d][S.hc.toLowerCase()]]}catch{return null}}))).filter(Boolean);
+ const el=$('#chart');if(!el||pts.length<2){el&&(el.textContent='Historique indisponible (connexion).');return}
+ const v=pts.map(p=>p[1]),mn=Math.min(...v),mx=Math.max(...v),W=340,H=190,x=i=>10+i*(W-20)/(v.length-1),y=n=>15+(1-(n-mn)/(mx-mn||1))*(H-40);
+ const ch=(v.at(-1)/v[0]-1)*100,up=ch>=0,col=up?'#2ECC8F':'#FF5C6C',line=v.map((n,i)=>`${x(i)},${y(n)}`).join(' ');
+ el.innerHTML=`<div style="color:var(--tx)"><b>1 ${S.hc} = ${fmt(v.at(-1))} FCFA</b> <span class="${up?'up':'dn'}">${up?'▲':'▼'} ${ch.toFixed(2)}%</span></div>
+ <svg class="ch" viewBox="0 0 ${W} ${H}"><defs><linearGradient id="a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${col}" stop-opacity=".35"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></linearGradient></defs>
+ <polygon points="${x(0)},${H-25} ${line} ${x(v.length-1)},${H-25}" fill="url(#a)"/><polyline points="${line}" fill="none" stroke="${col}" stroke-width="2.2" stroke-linejoin="round"/>
+ <text x="10" y="12" fill="#8A90A2" font-size="10">max ${fmt(mx)}</text><text x="10" y="${H-10}" fill="#8A90A2" font-size="10">${pts[0][0].slice(5)}</text><text x="${W-10}" y="${H-10}" text-anchor="end" fill="#8A90A2" font-size="10">${pts.at(-1)[0].slice(5)} • min ${fmt(mn)}</text></svg>`}
+const LN=()=>window.Capacitor?.Plugins?.LocalNotifications;
+async function perm(){try{if(LN())await LN().requestPermissions();else if(window.Notification)await Notification.requestPermission()}catch{}}
+async function notify(t,b){try{if(LN())await LN().schedule({notifications:[{id:Date.now()%2147483647,title:t,body:b}]});else if(window.Notification&&Notification.permission==='granted')new Notification(t,{body:b});else alert(t+'\n'+b)}catch{}}
+function checkAlert(){if(!S.on||!R)return;const u=xafPer('USD');if(u>=S.thr){if(!S.fired){S.fired=true;save();notify('🦅 MHugo Forex – Alerte Dollar',`1 USD = ${fmt(u)} FCFA (seuil ${fmt(S.thr)})`)}}else if(S.fired){S.fired=false;save()}}
+sync();draw();load();setInterval(load,3e5);document.addEventListener('visibilitychange',()=>!document.hidden&&load());
+</script></body></html>
