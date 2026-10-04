@@ -7,15 +7,20 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: {node-version: 20}
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with: {distribution: temurin, java-version: 21}
       - run: npm install
-      - run: |
+      - name: Preparer les icones
+        continue-on-error: true
+        run: |
+          sudo apt-get update
           sudo apt-get install -y librsvg2-bin
           rsvg-convert -w 1024 -h 1024 assets/logo.svg -o assets/icon-only.png
           cp assets/icon-only.png assets/splash.png
       - run: npx cap add android
-      - run: npx @capacitor/assets generate --android --iconBackgroundColor '#0B0E14' --splashBackgroundColor '#0B0E14' || true
+      - name: Generer les icones
+        continue-on-error: true
+        run: npx @capacitor/assets generate --android --iconBackgroundColor '#0B0E14' --splashBackgroundColor '#0B0E14'
       - run: npx cap sync android
       - run: cd android && chmod +x gradlew && ./gradlew assembleDebug
       - uses: actions/upload-artifact@v4
